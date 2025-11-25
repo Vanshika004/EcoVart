@@ -1,0 +1,6 @@
+[00:00:02.972] Server  LOG      ✓ Ready in 2s
+[00:00:06.466] Server  LOG      ○ Compiling /orders ...
+[00:00:37.185] Browser ERROR   unhandledRejection: FirebaseError: The query requires an index. That index is currently building and cannot be used yet. See its status here: https://console.firebase.google.com/v1/r/project/ecovart/firestore/indexes?create_composite=ClFwcm9qZWN0cy9lY292YXJ0L2RhdGFiYXNlcy8oZGVmYXVsdCkvY29sbGVjdGlvbkdyb3Vwcy9vcmRlcnMvaW5kZXhlcy9DSUNBZ09qWGg0RUsQARoKCgZ1c2VySWQQARoNCgljcmVhdGVkQXQQAhoMCghfX25hbWVfXxAC
+[00:13:30.627] Server  LOG        Reload env: .env.local
+[00:13:31.349] Server  LOG      ✓ Compiled in 652ms
+[00:13:31.743] Server  WARN     ⚠ Fast Refresh had to perform a full reload when ./lib/firebase.js changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
