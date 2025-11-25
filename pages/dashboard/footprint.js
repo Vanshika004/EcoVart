@@ -8,14 +8,8 @@ function formatMonthLabel(input) {
   if (!input) return "";
   if (typeof input === "string") {
     const [y, m] = input.split("-");
-    if (y && m) {
-      try {
-        const d = new Date(Number(y), Number(m) - 1, 1);
-        return d.toLocaleString(undefined, { month: "short", year: "numeric" });
-      } catch {
-        return input;
-      }
-    }
+    const d = new Date(Number(y), Number(m) - 1, 1);
+    return d.toLocaleString(undefined, { month: "short", year: "numeric" });
   }
   if (input?.toDate)
     return input
@@ -46,22 +40,21 @@ export default function FootprintDashboard() {
         const rows = snaps.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
 
         rows.sort((a, b) => {
-          const ad =
-            a.createdAt?.toDate?.() ||
-            (a.month ? new Date(a.month + "-01") : 0);
-          const bd =
-            b.createdAt?.toDate?.() ||
-            (b.month ? new Date(b.month + "-01") : 0);
+          const ad = a.createdAt?.toDate
+            ? a.createdAt.toDate()
+            : new Date(a.month + "-01");
+          const bd = b.createdAt?.toDate
+            ? b.createdAt.toDate()
+            : new Date(b.month + "-01");
           return bd - ad;
         });
 
         setHistory(rows);
       } catch (err) {
-        console.error("fetchHistory error", err);
+        console.error("Error:", err);
         setHistory([]);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     }
 
     fetchHistory();
@@ -83,22 +76,13 @@ export default function FootprintDashboard() {
   );
 
   const suggestions = [
-    {
-      title: "Reduce car usage",
-      desc: "Try public transport or carpooling 2x a week.",
-    },
+    { title: "Reduce car usage", desc: "Try public transport twice a week." },
     {
       title: "Eat less meat",
-      desc: "Replace 2 meat meals per week with plant-based options.",
+      desc: "Replace 2 meals with plant-based options.",
     },
-    {
-      title: "Shop consciously",
-      desc: "Prefer certified sustainable products and buy less disposable goods.",
-    },
-    {
-      title: "Choose low-carbon delivery",
-      desc: "Select consolidated or slower shipping options.",
-    },
+    { title: "Shop consciously", desc: "Prefer sustainable brands." },
+    { title: "Choose low-carbon delivery", desc: "Use consolidated shipping." },
   ];
 
   return (
@@ -132,16 +116,13 @@ export default function FootprintDashboard() {
           <div className="flex items-end gap-4 h-48">
             {chartData.map((c, i) => {
               const val = Number(c.emissions) || 0;
-              const heightPct = Math.round((val / maxEmission) * 100);
+              const height = Math.round((val / maxEmission) * 100);
+
               return (
-                <div
-                  key={c.id || i}
-                  className="flex-1 flex flex-col items-center"
-                >
+                <div key={i} className="flex-1 flex flex-col items-center">
                   <div
                     className="w-full bg-green-500 rounded-t-md"
-                    style={{ height: `${heightPct}%`, minHeight: 4 }}
-                    title={`${val} kg CO₂e`}
+                    style={{ height: `${height}%`, minHeight: 4 }}
                   />
                   <div className="text-xs text-gray-600 mt-2">
                     {formatMonthLabel(c.month || c.createdAt)}
@@ -156,31 +137,25 @@ export default function FootprintDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-4 rounded-lg shadow">
           <h3 className="font-semibold mb-3">EcoPoints History</h3>
-          {!history.length ? (
-            <div className="text-sm text-gray-500">No data</div>
-          ) : (
-            <ul className="space-y-3">
-              {history.map((r) => (
-                <li key={r.id} className="flex items-center justify-between">
-                  <div className="text-sm">
-                    <div className="font-medium">
-                      {formatMonthLabel(r.month || r.createdAt)}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {(r.emissions || 0).toFixed(2)} kg CO₂e
-                    </div>
+          <ul className="space-y-3">
+            {history.map((r, i) => (
+              <li key={i} className="flex items-center justify-between">
+                <div className="text-sm">
+                  <div className="font-medium">
+                    {formatMonthLabel(r.month || r.createdAt)}
                   </div>
-                  <div className="text-sm font-semibold">
-                    {r.ecoPoints || 0} pts
+                  <div className="text-xs text-gray-500">
+                    {(r.emissions || 0).toFixed(2)} kg CO₂e
                   </div>
-                </li>
-              ))}
-            </ul>
-          )}
+                </div>
+                <div className="font-semibold">{r.ecoPoints || 0} pts</div>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="font-semibold mb-3">Sustainability Suggestions</h3>
+          <h3 className="font-semibold mb-3">Suggestions</h3>
           <ul className="space-y-3 text-sm">
             {suggestions.map((s, i) => (
               <li key={i}>
